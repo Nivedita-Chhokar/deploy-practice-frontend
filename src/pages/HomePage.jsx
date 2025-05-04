@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import productService from '../services/productService';
+import '../assets/home.css';
 
 const HomePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);

@@ -2,7 +2,7 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { CartContext } from '../context/CartContext';
 import { formatPrice } from '../utils/formatPrice';
-
+import '../assets/productCard.css';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useContext(CartContext);

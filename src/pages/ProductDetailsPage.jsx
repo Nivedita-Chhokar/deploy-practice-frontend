@@ -4,6 +4,7 @@ import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import productService from '../services/productService';
 import { formatPrice } from '../utils/formatPrice';
+import '../assets/productDetails.css';
 
 const ProductDetailsPage = () => {
   const { id } = useParams();

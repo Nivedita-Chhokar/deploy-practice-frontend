@@ -1,15 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
-import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext'; // make sure this exists
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import axios from 'axios';
+import App from './App.jsx';
+import './assets/index.css';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider> 
-        <App />
-      </AuthProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+// Set up axios defaults
+axios.defaults.baseURL = 'http://localhost:8009';
+
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
 );

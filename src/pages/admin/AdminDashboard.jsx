@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import productService from '../../services/productService';
 import orderService from '../../services/orderService';
 import { formatPrice } from '../../utils/formatPrice';
+import '../../assets/admin.css';
 
 const AdminDashboard = () => {
   const [products, setProducts] = useState([]);

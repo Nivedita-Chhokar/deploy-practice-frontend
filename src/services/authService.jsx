@@ -1,28 +1,28 @@
 import axios from 'axios';
 
-const API = import.meta.env.API_URL;
+const API_URL = 'http://localhost:8009/api/auth';
 
 const register = async(userData) => {
     try {
-        const response = await axios.post(`${API}/register`, userData);
+        const response = await axios.post(`${API_URL}/register`, userData);
         return response.data;
 
     } catch (error) {
         console.error(error);
-        throw error;
+        throw error.response?.data || { message: 'Server error' };
     }
 }
 
 const login = async(userData) => {
     try {
-        const response = await axios.post(`${API}/login`, userData);
+        const response = await axios.post(`${API_URL}/login`, userData);
         if(response.data.token) {
             localStorage.setItem('user', JSON.stringify(response.data));
         }
         return response.data;
     } catch (error){
         console.error(error);
-        throw error;
+        throw error.response?.data || { message: 'Server error' };
     }
 }
 
@@ -32,7 +32,7 @@ const logout = async() => {
 
         if(token) {
             await axios.post(
-                `${API}/logout`,
+                `${API_URL}/logout`,
                 {},
                 {headers: {Authorization: `Bearer ${token}`}}
             );
@@ -42,7 +42,7 @@ const logout = async() => {
 
     } catch (error) {
         console.error(error);
-        throw error;
+        throw error.response?.data || { message: 'Server error' };
     }
 }
 

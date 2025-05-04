@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import orderService from '../services/orderService';
 import { formatPrice } from '../utils/formatPrice';
+import '../assets/orders.css';
 
 const OrdersPage = () => {
   const [orders, setOrders] = useState([]);
