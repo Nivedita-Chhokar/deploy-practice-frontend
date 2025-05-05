@@ -4,8 +4,7 @@ import axios from 'axios';
 import App from './App.jsx';
 import './assets/index.css';
 
-// Set up axios defaults
-axios.defaults.baseURL = 'http://localhost:8008';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:8008';
 
 // Add request interceptor for debugging
 axios.interceptors.request.use(
