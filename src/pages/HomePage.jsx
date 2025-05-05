@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import ProductCard from '../components/ProductCard';
-import productService from '../services/productService';
 import '../assets/home.css';
 
 const HomePage = () => {
@@ -17,33 +17,53 @@ const HomePage = () => {
         setLoading(true);
         setError(null);
         
-        // Get all products for featured section
-        const allProductsResponse = await productService.getAllProducts();
-        if (allProductsResponse.success) {
+        console.log('Fetching all products...');
+        // Direct API call to debug
+        const allProductsResponse = await axios.get('http://localhost:8008/api/products');
+        console.log('All products response:', allProductsResponse);
+        
+        if (allProductsResponse.data && allProductsResponse.data.success) {
           // Sort by highest rating for featured
-          const sortedProducts = [...allProductsResponse.data].sort(
+          const sortedProducts = [...allProductsResponse.data.data].sort(
             (a, b) => (b.ratings?.average || 0) - (a.ratings?.average || 0)
           );
+          console.log('Featured products:', sortedProducts.slice(0, 4));
           setFeaturedProducts(sortedProducts.slice(0, 4));
+        } else {
+          console.error('Invalid response format for all products:', allProductsResponse.data);
+          setError('Failed to load products. Unexpected response format.');
         }
         
-        // Get shoes products
-        const shoesResponse = await productService.getAllProducts('shoes');
-        if (shoesResponse.success) {
-          setShoesProducts(shoesResponse.data.slice(0, 4));
+        console.log('Fetching shoes products...');
+        // Direct API call to debug
+        const shoesResponse = await axios.get('http://localhost:8008/api/products?category=shoes');
+        console.log('Shoes response:', shoesResponse);
+        
+        if (shoesResponse.data && shoesResponse.data.success) {
+          console.log('Shoes products:', shoesResponse.data.data.slice(0, 4));
+          setShoesProducts(shoesResponse.data.data.slice(0, 4));
+        } else {
+          console.error('Invalid response format for shoes:', shoesResponse.data);
         }
         
-        // Get shirts products
-        const shirtsResponse = await productService.getAllProducts('shirts');
-        if (shirtsResponse.success) {
-          setShirtsProducts(shirtsResponse.data.slice(0, 4));
+        console.log('Fetching shirts products...');
+        // Direct API call to debug
+        const shirtsResponse = await axios.get('http://localhost:8008/api/products?category=shirts');
+        console.log('Shirts response:', shirtsResponse);
+        
+        if (shirtsResponse.data && shirtsResponse.data.success) {
+          console.log('Shirts products:', shirtsResponse.data.data.slice(0, 4));
+          setShirtsProducts(shirtsResponse.data.data.slice(0, 4));
+        } else {
+          console.error('Invalid response format for shirts:', shirtsResponse.data);
         }
         
         setLoading(false);
       } catch (err) {
-        setError('Failed to load products. Please try again later.');
-        setLoading(false);
         console.error('Error fetching products:', err);
+        console.error('Error details:', err.response || err.message);
+        setError('Failed to load products. Please check console for details.');
+        setLoading(false);
       }
     };
     
@@ -65,8 +85,17 @@ const HomePage = () => {
     return (
       <div className="container">
         <div className="error-container">
-          <h2>Oops!</h2>
+          <h2>Oops! Something went wrong</h2>
           <p>{error}</p>
+          <div>
+            <h3>Troubleshooting Steps:</h3>
+            <ol>
+              <li>Make sure your backend server is running on port 8008</li>
+              <li>Check if MongoDB is connected</li>
+              <li>Verify that products were seeded correctly</li>
+              <li>Check browser console for detailed errors</li>
+            </ol>
+          </div>
           <button onClick={() => window.location.reload()} className="btn">
             Try Again
           </button>
@@ -75,8 +104,25 @@ const HomePage = () => {
     );
   }
 
+  // Add debugging information
+  const noProductsMessage = (
+    <div className="debug-info" style={{margin: '20px', padding: '15px', border: '1px solid #ccc', borderRadius: '5px'}}>
+      <h3>No Products Found</h3>
+      <p>If you're not seeing any products, try these steps:</p>
+      <ul>
+        <li>Check if your backend server is running</li>
+        <li>Verify MongoDB connection</li>
+        <li>Run the seeder script: <code>node seedDatabase.js</code></li>
+        <li>Check browser console for API errors</li>
+      </ul>
+    </div>
+  );
+
   return (
     <div className="home-page">
+      {/* Show debugging info if no products found */}
+      {featuredProducts.length === 0 && noProductsMessage}
+      
       {/* Hero Section */}
       <section className="hero-section">
         <div className="container">
@@ -99,11 +145,15 @@ const HomePage = () => {
       <section className="featured-section">
         <div className="container">
           <h2 className="section-title">Featured Products</h2>
-          <div className="grid grid-4-cols">
-            {featuredProducts.map(product => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
+          {featuredProducts.length > 0 ? (
+            <div className="grid grid-4-cols">
+              {featuredProducts.map(product => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <p>No featured products found</p>
+          )}
           <div className="view-all">
             <Link to="/products" className="btn btn-outline">
               View All Products
@@ -144,42 +194,46 @@ const HomePage = () => {
       </section>
 
       {/* Popular Shoes */}
-      {shoesProducts.length > 0 && (
-        <section className="products-section">
-          <div className="container">
-            <h2 className="section-title">Popular Shoes</h2>
+      <section className="products-section">
+        <div className="container">
+          <h2 className="section-title">Popular Shoes</h2>
+          {shoesProducts.length > 0 ? (
             <div className="grid grid-4-cols">
               {shoesProducts.map(product => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>
-            <div className="view-all">
-              <Link to="/products/category/shoes" className="btn btn-outline">
-                View All Shoes
-              </Link>
-            </div>
+          ) : (
+            <p>No shoes products found</p>
+          )}
+          <div className="view-all">
+            <Link to="/products/category/shoes" className="btn btn-outline">
+              View All Shoes
+            </Link>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
 
       {/* Popular Shirts */}
-      {shirtsProducts.length > 0 && (
-        <section className="products-section">
-          <div className="container">
-            <h2 className="section-title">Popular Shirts</h2>
+      <section className="products-section">
+        <div className="container">
+          <h2 className="section-title">Popular Shirts</h2>
+          {shirtsProducts.length > 0 ? (
             <div className="grid grid-4-cols">
               {shirtsProducts.map(product => (
                 <ProductCard key={product._id} product={product} />
               ))}
             </div>
-            <div className="view-all">
-              <Link to="/products/category/shirts" className="btn btn-outline">
-                View All Shirts
-              </Link>
-            </div>
+          ) : (
+            <p>No shirts products found</p>
+          )}
+          <div className="view-all">
+            <Link to="/products/category/shirts" className="btn btn-outline">
+              View All Shirts
+            </Link>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { getToken } from '../utils/getToken';
 
-const API_URL = 'http://localhost:8009/api/orders';
+const API_URL = 'http://localhost:8008/api/orders';
 
 const getAllOrders = async () => {
   try {
